@@ -15,11 +15,11 @@ def api_get_current_user():
         return jsonify({'message': 'Bad authorization header!'}), 400
 
     split = auth_header.split(' ')
-    if len(split) == 2:
-        return jsonify({'message' : 'Bad authorization header!'}), 400
+    
     try:
         decode_data = jwt.decode(split[1], app.config['SECRET_KEY'])
-        user = User.query.filter_by(public_id=decode_data.get('public_id'))
+        user = User.query.filter_by(public_id=decode_data.get('user_id')).first()
+        print(user)
 
         if not user:
             return jsonify({'message': 'Token is invalid'}), 401
@@ -73,7 +73,7 @@ def api_create_users():
         db.session.commit()
 
         return jsonify({
-            'message':f'User with id {user.public_id} created successfully',
+            'message':'User with id {user.public_id} created successfully',
             'user': user.as_dict()
         })
     except Exception as error:
